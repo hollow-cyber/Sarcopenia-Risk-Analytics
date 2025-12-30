@@ -1,0 +1,290 @@
+{
+    "age": {
+        "min": 50.0,
+        "max": 86.0
+    },
+    "sex": {
+        "min": 1.0,
+        "max": 2.0
+    },
+    "education_level": {
+        "min": 0.0,
+        "max": 3.0
+    },
+    "ethnicity": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "primary_occupation_pre_60": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "marital_status": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "ssrs_level": {
+        "min": 1.0,
+        "max": 3.0
+    },
+    "psqi_level": {
+        "min": 1.0,
+        "max": 4.0
+    },
+    "current_smoker": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "current_drinker": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "current_tea_drinker": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "adl_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "iadl_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "mna_sf_level": {
+        "min": 1.0,
+        "max": 3.0
+    },
+    "sqjr_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "gad_7_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "gds_15_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "bmi": {
+        "min": 14.07087195,
+        "max": 55.74202421
+    },
+    "arm_circumference": {
+        "min": 10.0,
+        "max": 41.5
+    },
+    "calf_circumference": {
+        "min": 11.0,
+        "max": 47.0
+    },
+    "waist_circumference": {
+        "min": 11.0,
+        "max": 146.0
+    },
+    "hip_circumference": {
+        "min": 32.4,
+        "max": 133.5
+    },
+    "chair_stand_time": {
+        "min": 5.05,
+        "max": 31.35
+    },
+    "gait_speed_4m": {
+        "min": 0.228571429,
+        "max": 2.0
+    },
+    "gait_speed_3m_rt": {
+        "min": 0.223048327,
+        "max": 2.0
+    },
+    "fat_muscle_ratio": {
+        "min": 0.063829787,
+        "max": 2.188552189
+    },
+    "tsh": {
+        "min": 0.01,
+        "max": 57.27
+    },
+    "ft3": {
+        "min": 1.05,
+        "max": 13.35
+    },
+    "ft4": {
+        "min": 0.97,
+        "max": 36.18
+    },
+    "fasting_insulin": {
+        "min": 0.32,
+        "max": 195.1
+    },
+    "total_bilirubin": {
+        "min": 5.6,
+        "max": 88.1
+    },
+    "direct_bilirubin": {
+        "min": 0.9,
+        "max": 28.3
+    },
+    "indirect_bilirubin": {
+        "min": 3.9,
+        "max": 61.0
+    },
+    "total_protein": {
+        "min": 60.1,
+        "max": 256.8
+    },
+    "albumin": {
+        "min": 29.8,
+        "max": 63.1
+    },
+    "alt": {
+        "min": 7.0,
+        "max": 174.0
+    },
+    "ast": {
+        "min": 10.0,
+        "max": 159.0
+    },
+    "creatinine": {
+        "min": 37.5,
+        "max": 726.2
+    },
+    "uric_acid": {
+        "min": 93.0,
+        "max": 756.8
+    },
+    "fasting_glucose": {
+        "min": 3.9,
+        "max": 24.45
+    },
+    "triglycerides": {
+        "min": 0.13,
+        "max": 22.4
+    },
+    "hdl_c": {
+        "min": 0.37,
+        "max": 2.87
+    },
+    "ldl_c": {
+        "min": -5.0,
+        "max": 6.44
+    },
+    "wbc_count": {
+        "min": 2.4,
+        "max": 25.1
+    },
+    "rbc_count": {
+        "min": 2.84,
+        "max": 8.11
+    },
+    "hematocrit": {
+        "min": 28.0,
+        "max": 82.2
+    },
+    "mcv": {
+        "min": 65.0,
+        "max": 114.6
+    },
+    "mch": {
+        "min": 19.8,
+        "max": 41.1
+    },
+    "mchc": {
+        "min": 285.0,
+        "max": 408.0
+    },
+    "platelet_count": {
+        "min": 50.0,
+        "max": 357.0
+    },
+    "plateletcrit": {
+        "min": 0.03,
+        "max": 0.37
+    },
+    "vitamin_d": {
+        "min": 5.4,
+        "max": 60.7
+    },
+    "ast_alt_ratio": {
+        "min": 0.17,
+        "max": 3.0
+    },
+    "urea": {
+        "min": 2.51,
+        "max": 27.61
+    },
+    "alc": {
+        "min": 0.4,
+        "max": 4.4
+    },
+    "mpv": {
+        "min": 7.4,
+        "max": 16.1
+    },
+    "pdw": {
+        "min": 9.3,
+        "max": 21.3
+    },
+    "globulin": {
+        "min": 20.0,
+        "max": 193.7
+    },
+    "alb_glb_ratio": {
+        "min": 0.3,
+        "max": 2.5
+    },
+    "total_cholesterol": {
+        "min": 2.44,
+        "max": 10.83
+    },
+    "prealbumin": {
+        "min": 100.0,
+        "max": 2949.0
+    },
+    "hemoglobin": {
+        "min": 86.0,
+        "max": 242.0
+    },
+    "vldl": {
+        "min": 0.06,
+        "max": 10.18
+    },
+    "neutrophil_percentage": {
+        "min": 34.9,
+        "max": 90.2
+    },
+    "lymphocyte_percentage": {
+        "min": 7.1,
+        "max": 58.1
+    },
+    "mid_cell_percentage": {
+        "min": 2.7,
+        "max": 20.3
+    },
+    "anc": {
+        "min": 1.1,
+        "max": 22.7
+    },
+    "cortisol": {
+        "min": 4.0,
+        "max": 1150.6
+    },
+    "rdw_sd": {
+        "min": 34.1,
+        "max": 76.4
+    },
+    "mid": {
+        "min": 0.2,
+        "max": 1.5
+    },
+    "rdw_cv": {
+        "min": 11.3,
+        "max": 19.3
+    },
+    "p_lcr": {
+        "min": 9.7,
+        "max": 69.5
+    }
+}
