@@ -1,0 +1,76 @@
+原特征名	推荐变量名 (Model Feature Name)	学术全称 (Academic Term)
+年龄	age	Age, years
+性别	sex	Sex
+文化程度重编码-2	education_level	Educational level
+是否汉族	ethnicity	Ethnicity
+主要职业二分类	primary_occupation_pre_60	Primary occupation before age 60
+婚姻状况二分类	marital_status	Marital status
+社会支持量表评级	ssrs_level	SSRS
+PSQI评级	psqi_level	PSQI
+当前吸烟者	current_smoker	Current smoker
+当前饮酒者	current_drinker	Current drinker
+当前饮茶者	current_tea_drinker	Current tea drinker
+过去一个月疲劳	daytime_fatigue_past_month	Daytime fatigue (past month)
+ADL二分级	adl_level	ADL
+IADL二分级	iadl_level	IADL
+微营养评估	mna_sf_level	MNA-SF
+SQJR二分类	sqjr_level	SQJR
+广泛性焦虑自评量表二分类	gad_7_level	GAD-7
+老年抑郁量表二分类	gds_15_level	GDS-15
+BMI	bmi	BMI
+平均臂围-计算	arm_circumference	Mid-upper arm circumference, cm
+平均小腿围-计算	calf_circumference	Calf circumference, cm
+腰围	waist_circumference	Waist circumference, cm
+臀围	hip_circumference	Hip circumference, cm
+起坐用时	chair_stand_time	5-time chair stand test time,s
+4米步速	gait_speed_4m	4-m gait speed, m/s
+3米步速	gait_speed_3m_rt	3-m round-trip gait speed, m/s
+脂肪肌肉比	fat_muscle_ratio	Fat-to-muscle ratio
+ALB	albumin	Albumin
+A_G	alb_glb_ratio	Albumin/Globulin
+WBC	wbc_count	White blood cell count
+TSH	tsh	Thyroid-stimulating hormone
+FSH	fsh	Follicle-stimulating hormone
+P_LCR	p_lcr	Platelet large cell ratio
+LDL	ldl_c	Low-density lipoprotein cholesterol
+TG	triglycerides	Triglycerides
+HDL	hdl_c	High-density lipoprotein cholesterol
+T	testosterone	Testosterone
+ALT	alt	Alanine aminotransferase
+AST_ALT	ast_alt_ratio	Aspartate aminotransferase/Alanine aminotransferase
+AST	ast	Aspartate aminotransferase
+RBC	rbc_count	Red blood cell count
+RDWR	rdw_cv	Red blood cell distribution width - coefficient of variation
+RDWA	rdw_sd	Red blood cell distribution width - standard deviation
+MCV	mcv	Mean corpuscular volume
+HCT	hematocrit	Hematocrit
+CREA	creatinine	Creatinine
+VLDL	vldl	Very low-density lipoprotein
+IDBIL	indirect_bilirubin	Indirect bilirubin
+GLU0	fasting_glucose	Fasting plasma glucose
+Insulin0	fasting_insulin	Fasting insulin
+LPR	lymphocyte_percentage	Lymphocyte percentage
+LYMF	alc	Absolute lymphocyte count
+UREA	urea	Urea
+UA	uric_acid	Uric acid
+PTC	cortisol	Cortisol
+MCH	mch	Mean corpuscular hemoglobin
+MCHC	mchc	Mean corpuscular hemoglobin concentration
+MPV	mpv	Mean platelet volume
+PA	prealbumin	Prealbumin
+GLO	globulin	Globulin
+VitD	vitamin_d	25(OH) vitamin D
+HGB	hemoglobin	Hemoglobin
+PLT	platelet_count	Platelet count
+PDW	pdw	Platelet distribution width
+PCT	plateletcrit	Plateletcrit
+FT4	ft4	Free thyroxine
+FT3	ft3	Free triiodothyronine
+DBIL	direct_bilirubin	Direct bilirubin
+GPR	neutrophil_percentage	Neutrophil percentage
+GRAN	anc	Absolute neutrophil count
+MPR	mid_cell_percentage	Mid-sized cell percentage
+MID	mid	Absolute mid-sized cell count
+CHOL	total_cholesterol	Total cholesterol
+TBIL	total_bilirubin	Total bilirubin
+TP	total_protein	Total protein

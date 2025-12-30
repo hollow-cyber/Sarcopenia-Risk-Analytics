@@ -1,0 +1,8 @@
+altair==6.0.0
+fpdf2==2.8.5
+joblib==1.5.2
+matplotlib==3.10.8
+numpy==2.4.0
+pandas==2.3.3
+Pillow==12.0.0
+streamlit==1.51.0
