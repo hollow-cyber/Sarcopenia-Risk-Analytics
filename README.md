@@ -32,7 +32,7 @@ This project is supported by:
 ## 🇨🇳 中文说明
 
 ### 🏛️ 临床背景与支持
-**肌少症风险分析平台 (SRA)** 是一款专为老年个体设计的专业级临床决策支持工具。该平台基于 **Cox 比例风险集成模型**，能够将患者的基础临床指标转化为长期的个体化预后轨迹图。
+**肌少症风险分析平台 (SRA)** 是一款专为老年人群设计的专业级临床决策支持工具。该平台基于 **Cox 比例风险集成模型**，能够将患者的基础临床指标转化为长期的个体化肌少症发生风险轨迹图。
 
 技术支持单位：
 * **四川大学华西医院** 老年医学科。
@@ -52,15 +52,15 @@ This project is supported by:
 Sarcopenia-Risk-Analytics/
 ├── app.py                # Main app entry | 主程序入口
 ├── requirements.txt      # Dependencies | 依赖库列表
-├── logo.ico              # Institutional Logo | 机构标识
+├── logo.ico              # Institutional Logo | 机构图标
 ├── feature_mapping.txt   # Feature labels mapping | 特征标签映射表
 ├── src/                  # Source code | 核心代码
-│   ├── prediction.py     # Inference & OOD logic | 模型推断与分布检测
+│   ├── prediction.py     # Inference & OOD logic | 风险推断与计算
 │   ├── report_generator.py# PDF reporting engine | PDF报告生成引擎
-│   ├── outputs.py        # Visualizations | 数据可视化组件
-│   ├── inputs.py         # UI input components | 界面输入组件
+│   ├── outputs.py        # Visualizations | 结果可视化组件
+│   ├── inputs.py         # UI input components | 用户输入组件
 │   └── layouts.py        # Custom CSS & Headers | 页面布局与样式
-├── models/               # Model weights | 预训练模型资产
+├── models/               # Model weights | 训练完毕的模型信息
 └── config/               # Thresholds & bounds | 临床阈值与分布边界配置
 ```
 
