@@ -1,30 +1,41 @@
 原特征名	推荐变量名 (Model Feature Name)	学术全称 (Academic Term)
-年龄	age	Age, years
+年龄	age	Age
 性别	sex	Sex
 文化程度重编码-2	education_level	Educational level
 是否汉族	ethnicity	Ethnicity
 主要职业二分类	primary_occupation_pre_60	Primary occupation before age 60
 婚姻状况二分类	marital_status	Marital status
-社会支持量表评级	ssrs_level	SSRS
-PSQI评级	psqi_level	PSQI
-当前吸烟者	current_smoker	Current smoker
-当前饮酒者	current_drinker	Current drinker
-当前饮茶者	current_tea_drinker	Current tea drinker
+社会支持量表评级	ssrs_level	SSRS level
+PSQI评级	psqi_level	PSQI level
+高血压	hypertension	Hypertension
+冠心病	coronary_heart_disease	Coronary heart disease
+慢阻肺COPD	copd	Chronic obstructive pulmonary disease
+胃肠疾病	gastrointestinal_diseases	Gastrointestinal diseases
+肝脏疾病	liver_diseases	Liver diseases
+肾脏疾病	kidney_diseases	Kidney diseases
+糖尿病	diabetes_mellitus	Diabetes mellitus
+骨关节病	osteoarthritis	Osteoarthritis
+肿瘤	malignancy	Malignancy
+过去1个月是否有跌倒	daytime_fall_past_month	Daytime fall (past month)
+是否存在长达1个月的疼痛	daytime_pain_past_month	Daytime pain (past month)
+当前吸烟者	current_smoker	Current smoking status
+当前饮酒者	current_drinker	Current alcohol consumption
+当前饮茶者	current_tea_drinker	Current tea consumption
 过去一个月疲劳	daytime_fatigue_past_month	Daytime fatigue (past month)
-ADL二分级	adl_level	ADL
-IADL二分级	iadl_level	IADL
-微营养评估	mna_sf_level	MNA-SF
-SQJR二分类	sqjr_level	SQJR
-广泛性焦虑自评量表二分类	gad_7_level	GAD-7
-老年抑郁量表二分类	gds_15_level	GDS-15
+ADL二分级	adl_level	ADL level
+IADL二分级	iadl_level	IADL level
+微营养评估	mna_sf_level	MNA-SF level
+SPMSQ二分类	spmsq_level	SPMSQ level
+广泛性焦虑自评量表二分类	gad_7_level	GAD-7 level
+老年抑郁量表二分类	gds_15_level	GDS-15 level
 BMI	bmi	BMI
-平均臂围-计算	arm_circumference	Mid-upper arm circumference, cm
-平均小腿围-计算	calf_circumference	Calf circumference, cm
-腰围	waist_circumference	Waist circumference, cm
-臀围	hip_circumference	Hip circumference, cm
-起坐用时	chair_stand_time	5-time chair stand test time,s
-4米步速	gait_speed_4m	4-m gait speed, m/s
-3米步速	gait_speed_3m_rt	3-m round-trip gait speed, m/s
+平均臂围-计算	arm_circumference	Mid-upper arm circumference
+平均小腿围-计算	calf_circumference	Calf circumference
+腰围	waist_circumference	Waist circumference
+臀围	hip_circumference	Hip circumference
+起坐用时	chair_stand_time	5-time chair stand test time
+4米步速	gait_speed_4m	4-m gait speed
+3米步速	gait_speed_3m_sw	3-m shuttle walk speed
 脂肪肌肉比	fat_muscle_ratio	Fat-to-muscle ratio
 ALB	albumin	Albumin
 A_G	alb_glb_ratio	Albumin/Globulin
