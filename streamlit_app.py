@@ -5,7 +5,7 @@ West China Hospital, Sichuan University, China.
 
 import datetime
 import streamlit as st
-from src.layouts import set_st_header, show_responsive_warning
+from src.layouts import set_st_header
 from src.prediction import load_model_assets, cal_single_person_surv_func
 from src.inputs import get_user_input_sidebar
 from src.outputs import show_risk_metrics, show_risk_stratification, show_altair_survival_chart
@@ -31,19 +31,16 @@ def run_st_app() -> None:
 		sidebar_title="📋 Patient Parameters"
 	)
 	
-	# Display mobile-responsive warning
-	show_responsive_warning(breakpoint_px=768)
-	
 	# --- 2. Model Interpretability Section ---
 	# Providing transparency on feature weights via an expandable Forest Plot
 	with st.expander("🔍 Model Interpretation (Forest Plot) — Learn how the model calculates risk"):
 		st.markdown("""
             **About this visualization:** This forest plot illustrates the contribution of
-            each clinical feature to the final prediction. Factors on the right increase
+            each variable to the final prediction. Factors on the right increase
             risk (HR > 1), while those on the left are protective (HR < 1).
         """)
 		# Display the static SVG forest plot from the model directory
-		st.image("models/Cox/forest_plot.svg", use_container_width=True)
+		st.image("models/Cox/forest_plot.svg", width='stretch')
 	
 	# --- 3. Session State Initialization ---
 	# Prevents unnecessary re-computation during Streamlit reruns
@@ -84,6 +81,7 @@ def run_st_app() -> None:
 				# Compose the formal clinical PDF report
 				pdf_bytes = generate_report_pdf(
 					current_input_data,
+					survival_func,
 					avg_rr,
 					risk_status,
 					chart_buffer
@@ -149,7 +147,7 @@ def run_st_app() -> None:
 				mime="application/pdf",
 				type="primary"
 		):
-			st.toast("✅ **Clinical Report generation successful.** Your download has started.", icon='📄')
+			st.toast("**Clinical Report generation: Success.** Your download has started.", icon='📄')
 
 
 if __name__ == "__main__":
