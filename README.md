@@ -66,7 +66,7 @@ Sarcopenia-Risk-Analytics/
 
 1. **Clone & Install | 克隆与安装**:
    ```bash
-   git clone [https://github.com/your-username/Sarcopenia-Risk-Analytics.git](https://github.com/your-username/Sarcopenia-Risk-Analytics.git)
+   git clone [https://github.com/hollow-cyber/Sarcopenia-Risk-Analytics.git](https://github.com/hollow-cyber/Sarcopenia-Risk-Analytics.git)
    cd Sarcopenia-Risk-Analytics
    pip install -r requirements.txt
 
