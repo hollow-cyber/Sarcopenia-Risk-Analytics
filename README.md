@@ -72,7 +72,7 @@ Sarcopenia-Risk-Analytics/
 
 2. **Run Application | 运行应用**:
    ```bash
-   streamlit run app.py
+   streamlit run streamlit_app.py
 ---
 
 ## ⚖️ Disclaimer | 免责声明 ##
