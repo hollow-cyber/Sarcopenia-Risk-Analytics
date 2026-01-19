@@ -48,7 +48,7 @@ This project is supported by:
 
 ```text
 Sarcopenia-Risk-Analytics/
-├── app.py                # Main app entry | 主程序入口
+├── streamlit_app.py      # Main app entry | 主程序入口
 ├── requirements.txt      # Dependencies | 依赖库列表
 ├── logo.ico              # Institutional Logo | 机构图标
 ├── feature-mapping.txt   # Feature labels mapping | 特征标签映射表
