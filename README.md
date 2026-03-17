@@ -61,7 +61,11 @@ Sarcopenia-Risk-Analytics/
 ├── models/               # Model weights | 训练完毕的模型信息
 └── config/               # Thresholds & bounds | 临床阈值与分布边界配置
 ```
+---
+## 💻 Online Website | 在线访问
+**👉 [Click here：Sarcopenia Risk Analytics](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.app/)**
 
+---
 ## 🚀 Quick Start | 快速开始
 
 1. **Clone & Install | 克隆与安装**:
