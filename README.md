@@ -1,6 +1,6 @@
 # 🩺 Sarcopenia Risk Analytics (SRA) | 肌少症风险分析平台
 
-[![Streamlit App](https://img.shields.io/badge/Streamlit-Open%20App-FF4B4B?style=flat&logo=Streamlit&logoColor=white)](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.streamlit_app/)
+[![Streamlit App](https://img.shields.io/badge/Streamlit-Open%20App-FF4B4B?style=flat&logo=Streamlit&logoColor=white)](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.app/)
 [![Institution: WCH](https://img.shields.io/badge/Institution-West%20China%20Hospital-blue)](http://www.wchscu.cn/)
 
 [English](#english) | [中文说明](#中文说明) | [Quick Start / 快速开始](#quick-start)
@@ -13,7 +13,7 @@
 
 ### 📖 Overview
 
-**Sarcopenia Risk Analytics (SRA)** is a Streamlit streamlit_application that estimates the **1–7-year cumulative risk of incident sarcopenia** from five baseline measurements. The prediction engine uses **ridge-penalized Fine-Gray regression** to account for **death as a competing event**. Sarcopenia was defined according to the **Asian Working Group for Sarcopenia (AWGS) 2025** criteria.
+**Sarcopenia Risk Analytics (SRA)** is a Streamlit application that estimates the **1–7-year cumulative risk of incident sarcopenia** from five baseline measurements. The prediction engine uses **ridge-penalized Fine-Gray regression** to account for **death as a competing event**. Sarcopenia was defined according to the **Asian Working Group for Sarcopenia (AWGS) 2025** criteria.
 
 The tool was developed using data from the **West China Health and Aging Trend (WCHAT)** longitudinal cohort. It is intended for community-dwelling adults aged **50 years or older who are free of sarcopenia at baseline**. Predictions for individuals outside the study population should be interpreted in their clinical context.
 
@@ -79,10 +79,10 @@ The displayed risk is the estimated probability of developing sarcopenia within 
 
 ## 📋 Required Inputs | 必需输入
 
-| Predictor / 指标 | Internal name / 代码名称 | Unit or coding / 单位或编码 |
+| Predictor / 指标 | Internal name / 代码名称 | Unit / 单位 |
 | --- | --- | --- |
 | Age / 年龄 | `age` | Years; age ≥50 / 岁，年龄≥50岁 |
-| Sex / 性别 | `sex` | Select Male or Female; internally 1 or 2 / 界面选择男或女，内部编码为1或2 |
+| Sex / 性别 | `sex` | Select Male or Female / 选择男或女 |
 | Mid-upper arm circumference / 上臂围 | `arm_circumference` | cm |
 | Hip circumference / 臀围 | `hip_circumference` | cm |
 | Calf circumference / 小腿围 | `calf_circumference` | cm |
@@ -97,7 +97,7 @@ Select at least one prediction year. An optional record identifier can be includ
 
 ```text
 Sarcopenia-Risk-Predictor/
-├── streamlit_app.py                                  # Streamlit streamlit_application entry
+├── streamlit_app.py                        # Streamlit application entry
 ├── README.md                               # Project documentation
 ├── requirements.txt                        # Application dependencies
 ├── logo.ico                                # Institutional logo
@@ -133,7 +133,7 @@ Open a terminal in the project folder and activate your Python environment.
 python -m pip install -r requirements.txt
 ```
 
-Use an environment compatible with the saved models and preprocessors. The streamlit_application loads existing models and does not require the original cohort data to run.
+Use an environment compatible with the saved models and preprocessors. The application loads existing models and does not require the original cohort data to run.
 
 请使用与已保存模型及预处理器兼容的运行环境。应用加载已有模型，运行时无需原始队列数据。
 
@@ -143,13 +143,13 @@ Confirm that the final model bundle and all five `models/scalers/scalers_N.jobli
 
 确认最终模型包及5个 `models/scalers/scalers_N.joblib` 文件（`N = 1, …, 5`）齐全。加载器会核验5项指标、模型数量及完整开发集模型标记。
 
-### 3. Start the streamlit_application | 启动应用
+### 3. Start the application | 启动应用
 
 ```bash
 python -m streamlit run streamlit_app.py
 ```
 
-Open the local URL displayed by Streamlit. Enter the five measurements, select prediction years, and click **Run Assessment**. Results streamlit_appear as risk percentages, progress bars and an interactive curve. Click **Download Risk Report (PDF)** to save the corresponding report. If you change the inputs, run the assessment again to refresh the results; a reminder streamlit_appears while previous results are displayed.
+Open the local URL displayed by Streamlit. Enter the five measurements, select prediction years, and click **Run Assessment**. Results appear as risk percentages, progress bars and an interactive curve. Click **Download Risk Report (PDF)** to save the corresponding report. If you change the inputs, run the assessment again to refresh the results; a reminder appears while previous results are displayed.
 
 打开Streamlit显示的本地地址，填写5项指标并选择预测年份，点击 **Run Assessment** 查看风险百分比、进度条及交互式曲线，再点击 **Download Risk Report (PDF)** 保存对应报告。修改输入后，请重新运行评估以刷新结果；仍显示旧结果时，页面会给出提醒。
 
@@ -157,11 +157,11 @@ Open the local URL displayed by Streamlit. Enter the five measurements, select p
 
 ## 🔗 Online Access | 在线访问
 
-[Open Sarcopenia Risk Analytics / 打开在线工具](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.streamlit_app/)
+[Open Sarcopenia Risk Analytics / 打开在线工具](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.app/)
 
 ## 🧾 Data Handling | 数据处理
 
-Inputs are processed by the Python process running the Streamlit streamlit_application: on your computer when run locally, or on the hosting server when deployed online. Assessment results are held in session state, and PDFs are generated in memory. The streamlit_application does not persist individual inputs to a database or local data file. Downloaded PDFs are saved by your browser.
+Inputs are processed by the Python process running the Streamlit application: on your computer when run locally, or on the hosting server when deployed online. Assessment results are held in session state, and PDFs are generated in memory. The application does not persist individual inputs to a database or local data file. Downloaded PDFs are saved by your browser.
 
 输入由运行Streamlit的Python进程处理：本地运行时在本机计算，在线部署时在托管服务器计算。评估结果保留在会话状态中，PDF在内存中生成。应用不会将个体输入持久化保存到数据库或本地数据文件；下载的PDF由浏览器保存。
 
