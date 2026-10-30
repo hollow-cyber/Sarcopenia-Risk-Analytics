@@ -3,7 +3,7 @@
 [![Streamlit App](https://img.shields.io/badge/Streamlit-Open%20App-FF4B4B?style=flat&logo=Streamlit&logoColor=white)](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.app/)
 [![Institution: WCH](https://img.shields.io/badge/Institution-West%20China%20Hospital-blue)](http://www.wchscu.cn/)
 
-[English](#english) | [中文说明](#中文说明) | [Quick Start / 快速开始](#quick-start)
+[English](#english) | [中文说明](#中文说明) | [Quick Start / 快速开始](#online-access)
 
 ---
 
@@ -119,8 +119,6 @@ Sarcopenia-Risk-Predictor/
     └── layouts.py                          # Header, styling and usage information
 ```
 
-<a id="quick-start"></a>
-
 ## 🚀 Quick Start | 快速开始
 
 ### 1. Prepare the environment | 准备环境
@@ -154,6 +152,8 @@ Open the local URL displayed by Streamlit. Enter the five measurements, select p
 打开Streamlit显示的本地地址，填写5项指标并选择预测年份，点击 **Run Assessment** 查看风险百分比、进度条及交互式曲线，再点击 **Download Risk Report (PDF)** 保存对应报告。修改输入后，请重新运行评估以刷新结果；仍显示旧结果时，页面会给出提醒。
 
 ---
+
+<a id="online-access"></a>
 
 ## 🔗 Online Access | 在线访问
 
