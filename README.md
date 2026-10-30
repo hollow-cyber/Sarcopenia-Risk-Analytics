@@ -3,7 +3,7 @@
 [![Streamlit App](https://img.shields.io/badge/Streamlit-Open%20App-FF4B4B?style=flat&logo=Streamlit&logoColor=white)](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.app/)
 [![Institution: WCH](https://img.shields.io/badge/Institution-West%20China%20Hospital-blue)](http://www.wchscu.cn/)
 
-[English](#english) | [中文说明](#中文说明) | [Quick Start / 快速开始](#online-access)
+[English](#english) | [中文说明](#中文说明) | [Online Access | 在线访问](#online-access)
 
 ---
 
@@ -159,11 +159,15 @@ Open the local URL displayed by Streamlit. Enter the five measurements, select p
 
 [Open Sarcopenia Risk Analytics / 打开在线工具](https://sarcopenia-risk-analytics-j5mybxvzszqvdazhbxtjrf.streamlit.app/)
 
+---
+
 ## 🧾 Data Handling | 数据处理
 
 Inputs are processed by the Python process running the Streamlit application: on your computer when run locally, or on the hosting server when deployed online. Assessment results are held in session state, and PDFs are generated in memory. The application does not persist individual inputs to a database or local data file. Downloaded PDFs are saved by your browser.
 
 输入由运行Streamlit的Python进程处理：本地运行时在本机计算，在线部署时在托管服务器计算。评估结果保留在会话状态中，PDF在内存中生成。应用不会将个体输入持久化保存到数据库或本地数据文件；下载的PDF由浏览器保存。
+
+---
 
 ## ℹ️ Intended Use | 使用说明
 
