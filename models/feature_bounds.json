@@ -1,0 +1,106 @@
+{
+    "age": {
+        "min": 50.0,
+        "max": 87.0
+    },
+    "sex": {
+        "min": 1.0,
+        "max": 2.0
+    },
+    "education_level": {
+        "min": 0.0,
+        "max": 3.0
+    },
+    "ethnicity": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "primary_occupation_pre_60": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "marital_status": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "current_smoker": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "current_drinker": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "current_tea_drinker": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "daytime_fatigue_past_month": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "ssrs_level": {
+        "min": 1.0,
+        "max": 3.0
+    },
+    "psqi_level": {
+        "min": 1.0,
+        "max": 4.0
+    },
+    "adl_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "iadl_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "mna_sf_level": {
+        "min": 1.0,
+        "max": 3.0
+    },
+    "spmsq_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "gad_7_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "gds_15_level": {
+        "min": 0.0,
+        "max": 1.0
+    },
+    "bmi": {
+        "min": 14.07087195,
+        "max": 49.74485497
+    },
+    "arm_circumference": {
+        "min": 10.0,
+        "max": 41.5
+    },
+    "waist_circumference": {
+        "min": 28.0,
+        "max": 146.0
+    },
+    "hip_circumference": {
+        "min": 32.4,
+        "max": 150.0
+    },
+    "calf_circumference": {
+        "min": 27.5,
+        "max": 47.0
+    },
+    "chair_stand_time": {
+        "min": 5.05,
+        "max": 31.35
+    },
+    "gait_speed_4m": {
+        "min": 0.263157895,
+        "max": 2.0
+    },
+    "gait_speed_3m_sw": {
+        "min": 0.214285714,
+        "max": 2.0
+    }
+}
