@@ -4,304 +4,301 @@ West China Hospital, Sichuan University, China.
 """
 
 import json
+from pathlib import Path
+from typing import Any
+
 import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
-from typing import Any
-from pathlib import Path
+
+# One shared definition keeps the sidebar, model input and PDF labels consistent.
+# The numeric order used for inference always comes from the saved model bundle.
+FEATURE_LABELS = {
+	"age": "Age",
+	"sex": "Sex",
+	"arm_circumference": "Mid-upper arm circumference",
+	"hip_circumference": "Hip circumference",
+	"calf_circumference": "Calf circumference",
+}
+CONTINUOUS_FEATURES = ("age", "arm_circumference", "hip_circumference", "calf_circumference")
+MAX_PREDICTION_YEAR = 7.0
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def extract_scaling_parameters(
+		preprocessor: Any,
+		features: list[str],
+) -> dict[str, tuple[float, float]]:
+	"""Extracts the fitted scaling parameters for the four continuous predictors.
+
+	The saved ColumnTransformer expects all original development columns. Its
+	StandardScaler transforms each column independently, so the selected columns
+	can be transformed exactly using their saved mean_ and scale_. Sex is passed
+	through unchanged: male=1 and female=2. No parameters are fitted here.
+
+	Args:
+		preprocessor: A fitted development-cohort ColumnTransformer.
+		features: Feature names in the model bundle's required order.
+
+	Returns:
+		A mapping from continuous feature to its fitted (mean, scale).
+
+	Raises:
+		ValueError: The preprocessor does not match the supported five-input model.
+	"""
+	if not hasattr(preprocessor, "transformers_"):
+		raise ValueError("The saved preprocessor is not a fitted ColumnTransformer.")
+	entries = [item for item in preprocessor.transformers_ if item[0] == "scaler"]
+	if len(entries) != 1:
+		raise ValueError("Each preprocessor must contain one fitted 'scaler' transformer.")
+	_, scaler, selector = entries[0]
+	input_names = list(preprocessor.feature_names_in_)
+	if isinstance(selector, slice):
+		columns = input_names[selector]
+	else:
+		columns = [value if isinstance(value, str) else input_names[int(value)] for value in selector]
+	if not hasattr(scaler, "mean_") or not hasattr(scaler, "scale_"):
+		raise ValueError("The scaler must expose fitted mean_ and scale_ arrays.")
+	if not scaler.with_mean or not scaler.with_std:
+		raise ValueError("The current model requires centering and standard-deviation scaling.")
+	if "sex" in columns or not set(CONTINUOUS_FEATURES).issubset(columns):
+		raise ValueError("The scaler must scale the four continuous predictors and leave sex unchanged.")
+	if set(features) != set(FEATURE_LABELS):
+		raise ValueError("The bundle must contain the five supported predictors.")
+	output_names = list(preprocessor.get_feature_names_out())
+	if len(output_names) != len(set(output_names)) or not set(features).issubset(output_names):
+		raise ValueError("Preprocessor output does not contain unique, unprefixed model feature names.")
+	
+	# Reject a changed categorical transformation rather than silently treating
+	# encoded sex values as the original study codes.
+	for name, transformer, selected in preprocessor.transformers_:
+		if name == "scaler" or isinstance(transformer, str):
+			continue
+		if isinstance(selected, slice):
+			selected_names = input_names[selected]
+		else:
+			selected_names = [value if isinstance(value, str) else input_names[int(value)] for value in selected]
+		if "sex" in selected_names and name != "remainder":
+			raise ValueError("Sex must be passed through without categorical encoding.")
+	
+	means = np.asarray(scaler.mean_, dtype=float)
+	scales = np.asarray(scaler.scale_, dtype=float)
+	if len(columns) != means.size or means.shape != scales.shape:
+		raise ValueError("Saved scaler columns, means and standard deviations do not match.")
+	parameters = {}
+	for feature in CONTINUOUS_FEATURES:
+		index = columns.index(feature)
+		mean, scale = float(means[index]), float(scales[index])
+		if not np.isfinite(mean) or not np.isfinite(scale) or scale <= 0:
+			raise ValueError(f"Invalid saved scaling parameters for {feature}.")
+		parameters[feature] = (mean, scale)
+	return parameters
+
+
+@st.cache_resource
+def load_model_assets(model_dir: str | Path | None = None) -> dict[str, Any]:
+	"""Loads the five final Fine-Gray models and their matching preprocessors.
+
+	Args:
+		model_dir: Model asset directory; defaults to the project's models folder.
+
+	Returns:
+		Models, ordered features, fitted scaling parameters and predictor bounds.
+
+	Raises:
+		ValueError: The model role, feature schema or fitted model state is invalid.
+		FileNotFoundError: A required bundle or matching preprocessor is absent.
+	"""
+	base_path = PROJECT_ROOT / "models" if model_dir is None else Path(model_dir)
+	bundle = joblib.load(base_path / "final_fine_gray_prediction_bundle.joblib")
+	if not isinstance(bundle, dict):
+		raise ValueError("The Fine-Gray prediction bundle must be a dictionary.")
+	if bundle.get("model_role") != "final model refitted on the full development cohort":
+		raise ValueError("Please use the final models fitted on the full development cohort.")
+	if bundle.get("training_population") != "full development cohort":
+		raise ValueError("The bundle's training population is not the full development cohort.")
+	models = list(bundle["models"])
+	features = list(bundle["features"])
+	if len(models) != 5 or bundle.get("n_imputations") != 5:
+		raise ValueError("Exactly five imputation-specific final models are required.")
+	if len(features) != 5 or set(features) != set(FEATURE_LABELS):
+		raise ValueError("The model feature list does not match the five-input interface.")
+	
+	scaling_parameters = []
+	for number, model in enumerate(models, start=1):
+		if not callable(getattr(model, "predict_cumulative_incidence", None)):
+			raise ValueError(f"Model {number} does not support cumulative-incidence prediction.")
+		if int(model.n_features_in_) != len(features) or int(model.cause) != 1:
+			raise ValueError(f"Model {number} has an incompatible input schema or event of interest.")
+		if not bool(model.converged_) or not np.isfinite(model.coef_).all():
+			raise ValueError(f"Model {number} did not converge or contains invalid coefficients.")
+		path = base_path / "scalers" / f"scalers_{number}.joblib"
+		preprocessor = joblib.load(path)
+		scaling_parameters.append(extract_scaling_parameters(preprocessor, features))
+	
+	bounds_path = base_path / "feature_bounds.json"
+	if bounds_path.is_file():
+		with bounds_path.open("r", encoding="utf-8-sig") as file:
+			bounds = json.load(file)
+		bounds = {feature: bounds[feature] for feature in features if feature in bounds}
+	else:
+		bounds = {}
+	return {
+		"models": models,
+		"features": features,
+		"scaling_parameters": scaling_parameters,
+		"feature_bounds": bounds,
+	}
 
 
 def check_data_plausibility(
 		personal_data: dict,
-		feature_bounds: dict
+		feature_bounds: dict,
 ) -> list[str]:
-	"""Identifies input features that fall outside the model's training distribution.
-
-	In clinical predictive modeling, out-of-distribution (OOD) inputs can lead to
-	unreliable 'extrapolated' predictions. This utility performs a plausibility
-	check by comparing current patient metrics against the union of boundaries
-	derived from the imputed training cohorts.
+	"""Lists selected predictors outside their development-cohort ranges.
 
 	Args:
-		personal_data: Dictionary containing the patient's clinical
-			input features (e.g., age, BMI, circumferences).
-		feature_bounds: Metadata containing the 'min' and 'max' values
-			for each feature as observed in the training dataset.
-			Structure: {feature_name: {'min': float, 'max': float}}.
+		personal_data: Raw, unscaled patient measurements.
+		feature_bounds: Saved lower and upper bounds indexed by feature name.
 
 	Returns:
-		A list of formatted strings identifying features that exceed
-		training bounds, e.g., ["Age (115)", "BMI (14.2)"]. Returns an
-		empty list if all inputs are within the valid range.
+		Human-readable descriptions of out-of-range measurements.
 	"""
-	warnings = []
-	
-	for feature, val in personal_data.items():
-		# Retrieve the valid range for the current feature
-		val_range = feature_bounds.get(feature)
-		
-		if val_range is not None and val is not None:
-			# Check if the clinical metric is an outlier relative to training data
-			if val < val_range['min'] or val > val_range['max']:
-				warnings.append(f"{feature} ({val})")
-	
-	return warnings
+	outside = []
+	for feature, label in FEATURE_LABELS.items():
+		value = personal_data.get(feature)
+		bounds = feature_bounds.get(feature)
+		if value is not None and bounds is not None:
+			if value < bounds["min"] or value > bounds["max"]:
+				outside.append(f"{label} ({value:g})")
+	return outside
 
 
-@st.cache_resource
-def load_model_assets(
-		method_name: str = "Cox"
-) -> dict[str, Any]:
-	"""Loads trained models, preprocessors, and feature lists from the local directory.
-
-	This function utilizes Streamlit's cache mechanism to ensure that heavy model
-	assets are only loaded into memory once during the application lifecycle,
-	significantly improving performance for concurrent users.
+def transform_selected_features(
+		personal_data: dict[str, Any],
+		features: list[str],
+		scaling_parameters: dict[str, tuple[float, float]],
+) -> np.ndarray:
+	"""Transforms the five raw inputs using one saved imputation's parameters.
 
 	Args:
-		method_name: The subdirectory name within 'models' containing the
-			specific model assets. Defaults to "Cox".
+		personal_data: Five raw measurements using male=1 and female=2.
+		features: Required numeric column order from the bundle.
+		scaling_parameters: Fitted means and standard deviations for one model.
 
 	Returns:
-		A dictionary containing three keys:
-			- "features": List of feature names required by the model.
-			- "preprocessors": List of fitted ColumnTransformer objects.
-			- "models": List of trained survival analysis models (e.g., CoxPHFitter).
+		A finite float matrix with shape (1, 5).
 	"""
-	# Obtain the absolute path of the current script
-	current_file = Path(__file__).resolve()
-	
-	# Locate the project root directory (assuming this script is inside 'src/')
-	project_root = current_file.parent.parent
-	base_path = project_root / 'models' / method_name
-	
-	# Safety check: Verify if the model directory exists to prevent FileNotFoundError
-	if not base_path.exists():
-		st.error(f"❌ Model path not found: {base_path}")
-		st.stop()
-	
-	# Load feature names from the text file (tab-separated)
-	with open(base_path / 'final_model_features.txt', 'r', encoding='utf-8') as f:
-		features = f.read().strip().split('\t')
-	
-	# Load serialized assets using joblib
-	assets = {
-		"features": features,
-		"preprocessors": joblib.load(base_path / 'final_feature_preprocessors.joblib'),
-		"models": joblib.load(base_path / 'final_models.joblib')
-	}
-	return assets
+	values = []
+	for feature in features:
+		value = personal_data.get(feature)
+		if value is None:
+			raise ValueError(f"Please provide {FEATURE_LABELS[feature]}.")
+		value = float(value)
+		if not np.isfinite(value):
+			raise ValueError(f"{FEATURE_LABELS[feature]} must be a finite number.")
+		if feature == "sex":
+			if value not in (1.0, 2.0):
+				raise ValueError("Sex must be coded as male=1 or female=2.")
+		else:
+			if value <= 0:
+				raise ValueError("Measurements must be positive.")
+			if feature == "age" and value < 50:
+				raise ValueError("Age must be at least 50 years.")
+			mean, scale = scaling_parameters[feature]
+			value = (value - mean) / scale
+		values.append(value)
+	return np.asarray([values], dtype=float)
 
 
-def load_thresholds(
-		method_name: str = "Cox"
-) -> dict[str, float]:
-	"""Loads clinical risk thresholds from a local configuration file.
-
-	This utility function retrieves pre-defined cut-off values (e.g., quintiles or
-	clinically validated thresholds) from a JSON file. This ensures that
-	stratification logic remains decoupled from the core UI code for easier
-	maintenance and updates.
-
-	Args:
-		method_name: The name of the specific model or algorithm whose
-			thresholds are being requested. Defaults to "Cox".
-
-	Returns:
-		A dictionary containing threshold constants such as:
-			- "low_risk": The upper bound for the low-risk category.
-			- "high_risk": The lower bound for the high-risk category.
-			- "max_display_rr": The maximum value for the visual progress bar.
-	"""
-	# Resolve the path to the config directory relative to this script
-	config_path = Path(__file__).resolve().parent.parent / 'config' / 'thresholds.json'
-	
-	try:
-		with open(config_path, 'r', encoding='utf-8') as f:
-			config_data = json.load(f)
-			return config_data.get(method_name, {})
-	except FileNotFoundError:
-		st.error(f"❌ Configuration file not found at {config_path}. Using default empty thresholds.")
-		return {}
-
-
-def cal_single_person_surv_func(
-		personal_data_dict: dict,
-		assets: dict
-) -> tuple[pd.Series, float, str]:
-	"""Calculates individualized survival probability and clinical risk stratification.
-
-	This function executes a multi-stage ensemble prediction pipeline designed for
-	robustness in clinical settings. It integrates multiple cross-validated Cox-based
-	models to mitigate bias and provide a consensus survival estimate.
-
-	The pipeline involves:
-	1.  **Plausibility Verification**: Validates if input characteristics are within the
-		distribution of the training cohort to ensure predictive reliability.
-	2.  **Schema Alignment**: Maps raw clinical inputs to standardized feature vectors.
-	3.  **Ensemble Inference**: Iteratively applies fold-specific preprocessors and
-		survival estimators to generate a distribution of results.
-	4.  **Consensus Aggregation**: Computes arithmetic means for survival functions
-		S(t) and Partial Hazards (RR) to produce a unified clinical indicator.
-	5.  **Risk Categorization**: Stratifies patients based on clinically validated
-		relative risk (RR) thresholds.
-
-	Args:
-		personal_data_dict: A collection of patient baseline characteristics
-			(e.g., age, BMI, circumferences) obtained from clinical assessment.
-		assets: A structured container of trained model components including:
-			- "features" (list): The deterministic order of predictors.
-			- "preprocessors" (list): Fitted ColumnTransformers for normalization.
-			- "models" (list): Trained survival estimators (e.g., CoxPHFitter).
-
-	Returns:
-		A tri-element tuple containing:
-			- avg_survival_func (pd.Series): The ensemble-averaged survival function.
-			  Index represents time points (Years); values represent survival probability [0, 1].
-			- relative_risk (float): The consensus Partial Hazard (exp(βx)), representing
-			  the individual's risk multiplier relative to the population mean.
-			- status_text (str): Qualitative clinical risk category ("Low", "Moderate", or "High Risk").
-	"""
-	
-	# ================= 0. Data Plausibility Check (Out-of-Distribution Detection) =================
-	try:
-		# Define path to the pre-calculated training data distribution boundaries
-		config_path = Path(__file__).resolve().parent.parent / 'config' / 'feature_bounds.json'
-		
-		with open(config_path, 'r', encoding='utf-8') as f:
-			feature_bounds = json.load(f)
-			# Identify metrics exceeding the model's validated range to warn users of uncertainty
-			out_of_bounds_features = check_data_plausibility(personal_data_dict, feature_bounds)
-			if out_of_bounds_features:
-				st.warning(
-					f"⚠️ **Caution:** The following inputs are outside the model's core validation range: "
-					f"{', '.join(out_of_bounds_features)}. "
-					"The prediction results may have increased uncertainty."
-				)
-	except FileNotFoundError:
-		# Fallback if configuration is missing; proceed with prediction but without OOD warning
-		pass
-	
-	# ================= 1. Resource Initialization =================
-	# Extract structural assets required for the ensemble pipeline
-	features = assets["features"]
-	preprocessors = assets["preprocessors"]
-	models = assets["models"]
-	
-	# ================= 2. Data Preprocessing =================
-	# Construct a single-row DataFrame ensured to match the model's feature schema
-	person_data_df = pd.DataFrame([personal_data_dict])[features]
-	
-	all_survival_funcs: list[pd.DataFrame] = []
-	risk_scores: list[float] = []
-	
-	# ================= 3. Iterative Prediction (Ensemble) =================
-	# Iterate through cross-validation folds to derive a robust consensus estimate
-	for model, preprocessor in zip(models, preprocessors):
-		
-		# A. Feature Transformation: Scaling and categorical encoding
-		X_processed_values = preprocessor.transform(person_data_df)
-		
-		# B. Schema Reconstruction: Mapping NumPy arrays back to labeled DataFrames
-		cols = preprocessor.get_feature_names_out()
-		X_processed = pd.DataFrame(X_processed_values, columns=cols)
-		
-		# C. Feature Re-alignment: Ensuring exact column ordering for position-dependent models
-		try:
-			X_final = X_processed[features]
-		except KeyError as e:
-			st.error(f"❌ Schema Mismatch: Preprocessor output does not match required features. {e}")
-			st.stop()
-		
-		# D. Survival Function Prediction: Estimating individualized survival curves
-		all_survival_funcs.append(model.predict_survival_function(X_final))
-		
-		# E. Partial Hazard Calculation: Obtaining the exponentiated risk score (RR)
-		risk_scores.append(model.predict_partial_hazard(X_final).item())
-	
-	# ================= 4. Result Ensemble & Aggregation =================
-	# Perform arithmetic averaging across all folds to stabilize predictive variance
-	avg_survival_func: pd.Series = pd.concat(all_survival_funcs, axis=1).mean(axis=1)
-	
-	# Aggregate relative risk scores into a single clinical metric
-	relative_risk = float(np.mean(risk_scores))
-	
-	# ================= 5. Clinical Risk Stratification =================
-	# Categorize the patient based on pre-defined clinical hazard thresholds
-	thresholds = load_thresholds()
-	LOW_RISK_VAL = thresholds.get("low_risk", 0.6)
-	HIGH_RISK_VAL = thresholds.get("high_risk", 1.6)
-	
-	if relative_risk < LOW_RISK_VAL:
-		status_text = "Low Risk"
-	elif relative_risk > HIGH_RISK_VAL:
-		status_text = "High Risk"
-	else:
-		status_text = "Moderate Risk"
-	
-	return avg_survival_func, relative_risk, status_text
-
-
-def cal_probability_at_time(
-		survival_func: pd.Series,
-		time: int | float
-) -> tuple[float, float]:
-	"""Safely extracts health and disease probabilities at a specific time point.
-
-	This function calculates the survival probability (health) and the complement
-	cumulative incidence (disease risk) from the survival curve. It handles
-	potential missing time points by using a 'look-back' approach.
-	
-	Calculates:
-    - Survival Probability S(t): Prob(T > t)
-    - Cumulative Incidence F(t): Prob(T <= t) = 1 - S(t)
-
-	Args:
-		survival_func: The individualized survival function where
-			the index is time and values are survival probabilities.
-		time: The specific time point (e.g., years) to evaluate.
-
-	Returns:
-		A tuple containing:
-			- prob_surv: Survival probability at the given time.
-			- prob_disease: Probability of disease occurrence (1 - survival).
-	"""
-	
-	# Obtain survival probability; disease probability is defined as 1 - S(t).
-	# .asof(time) retrieves the last available value at or before the specified time.
-	# If the requested time is before the first recorded data point (e.g., Day 0),
-	# the survival probability defaults to 1.0 (100%).
-	prob_surv = survival_func.asof(time)
-	if pd.isna(prob_surv):
-		prob_surv = 1.0
-	
-	return prob_surv, 1 - prob_surv
-
-
-def ensure_survival_func_0_time(
-		survival_func: pd.Series
+def predict_individual_risk(
+		personal_data: dict[str, Any],
+		assets: dict[str, Any],
 ) -> pd.Series:
-	"""Ensures the survival curve includes the baseline origin (t=0, p=1.0).
+	"""Averages the five imputation-specific cumulative-incidence predictions.
 
-	In clinical survival analysis, the logical starting point for all subjects
-	is a 100% survival probability. This function checks for the presence of
-	the t=0 index and prepends it if missing to ensure proper visualization
-	and calculation.
+	Each model receives inputs transformed using its matching development-cohort
+	scaler. Averaging is performed on probabilities, after model prediction.
 
 	Args:
-		survival_func: The individualized survival function.
+		personal_data: Baseline measurements and optional selected evaluation years.
+		assets: The validated dictionary returned by load_model_assets().
 
 	Returns:
-		The survival function with the baseline origin ensured.
+		A series of cumulative sarcopenia risks indexed by years, including 0 and 7.
+
+	Raises:
+		ValueError: A requested year or predicted probability is invalid.
 	"""
+	models, features = assets["models"], assets["features"]
+	parameters = assets["scaling_parameters"]
+	if len(models) != 5 or len(parameters) != 5:
+		raise ValueError("Five models and five matching sets of scaling parameters are required.")
+	requested_times = np.asarray(personal_data.get("eval_times", []), dtype=float)
+	if requested_times.ndim != 1 or not np.isfinite(requested_times).all():
+		raise ValueError("Prediction years must be a finite one-dimensional list.")
+	if np.any((requested_times < 0) | (requested_times > MAX_PREDICTION_YEAR)):
+		raise ValueError("Prediction is supported only from baseline through year 7.")
 	
-	# Check if the baseline time point (0.0) exists in the index.
-	if 0 not in survival_func.index:
-		# Prepend a survival probability of 1.0 at t=0 and re-sort the index.
-		survival_func = pd.concat([
-			pd.Series([1.0], index=[0.0]),
-			survival_func
-		]).sort_index()
+	# All annual times are present, including years with no baseline-hazard jump.
+	# Preserve any additional saved event times so the displayed step curve is exact.
+	grid_parts = [np.arange(0.0, MAX_PREDICTION_YEAR + 1.0), requested_times]
+	for model in models:
+		event_times = np.asarray(model._state.baseline_times, dtype=float)
+		if not np.isfinite(event_times).all():
+			raise ValueError("A model contains invalid baseline event times.")
+		grid_parts.append(event_times[(event_times >= 0) & (event_times <= MAX_PREDICTION_YEAR)])
+	times = np.unique(np.concatenate(grid_parts))
 	
-	return survival_func
+	predictions = []
+	for number, (model, scaling) in enumerate(zip(models, parameters), start=1):
+		x = transform_selected_features(personal_data, features, scaling)
+		probabilities = np.asarray(model.predict_cumulative_incidence(x, times=times), dtype=float)
+		if probabilities.shape != (1, len(times)) or not np.isfinite(probabilities).all():
+			raise ValueError(f"Model {number} returned an invalid probability array.")
+		if np.any((probabilities < -1e-10) | (probabilities > 1.0 + 1e-10)):
+			raise ValueError(f"Model {number} returned probabilities outside [0, 1].")
+		if np.any(np.diff(probabilities[0]) < -1e-10) or abs(probabilities[0, 0]) > 1e-10:
+			raise ValueError(f"Model {number} returned an invalid cumulative-incidence curve.")
+		predictions.append(np.clip(probabilities[0], 0.0, 1.0))
+	pooled = np.mean(np.stack(predictions, axis=0), axis=0)
+	return pd.Series(pooled, index=times, name="Cumulative Risk")
+
+
+def ensure_cumulative_risk_0_time(cumulative_risk: pd.Series) -> pd.Series:
+	"""Validates a cumulative-incidence curve and ensures its origin is (0, 0)."""
+	curve = cumulative_risk.astype(float).copy().sort_index()
+	curve.index = curve.index.astype(float)
+	if curve.empty or curve.index.has_duplicates:
+		raise ValueError("The cumulative-risk curve is empty or contains duplicate times.")
+	if not np.isfinite(curve.index).all() or not np.isfinite(curve.to_numpy()).all():
+		raise ValueError("The cumulative-risk curve contains invalid times or probabilities.")
+	if curve.index.min() < 0 or curve.index.max() > MAX_PREDICTION_YEAR:
+		raise ValueError("The cumulative-risk curve must be within 0-7 years.")
+	if (curve < 0).any() or (curve > 1).any() or np.any(np.diff(curve.to_numpy()) < -1e-10):
+		raise ValueError("Cumulative risks must increase monotonically within [0, 1].")
+	if 0.0 in curve.index and abs(float(curve.loc[0.0])) > 1e-10:
+		raise ValueError("Cumulative risk must be zero at baseline.")
+	curve.loc[0.0] = 0.0
+	return curve.sort_index()
+
+
+def risk_at_time(
+		cumulative_risk: pd.Series,
+		time: int | float,
+) -> float:
+	"""Reads cumulative risk using the latest step at or before a supported time.
+
+	Args:
+		cumulative_risk: Model curve including baseline and the supported end time.
+		time: Prediction horizon, in years.
+
+	Returns:
+		The absolute cumulative risk as a number between 0 and 1.
+	"""
+	query = float(time)
+	curve = ensure_cumulative_risk_0_time(cumulative_risk)
+	if not np.isfinite(query) or query < 0 or query > float(curve.index.max()):
+		raise ValueError("The requested prediction year lies outside the available curve.")
+	return float(curve.asof(query))

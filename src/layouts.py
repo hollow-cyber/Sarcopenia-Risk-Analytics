@@ -8,9 +8,7 @@ import streamlit as st
 from pathlib import Path
 
 
-def get_image_base64(
-		image_path: str | Path
-) -> str:
+def get_image_base64(image_path: str | Path) -> str:
 	"""Converts a local image file to a base64 encoded string.
 
 	This function reads an image from the local file system, ensures its
@@ -39,7 +37,7 @@ def get_image_base64(
 def set_st_header(
 		main_title: str,
 		image_path: str | Path,
-		sidebar_title: str
+		sidebar_title: str,
 ) -> None:
 	"""Sets the header configuration for the Streamlit application.
 
@@ -182,18 +180,17 @@ def set_st_header(
 	with st.expander("📜 Read Before Use", expanded=True):
 		st.warning("""
 		**Clinical Disclaimer**:
-		- This risk assessment tool is powered by a **Cox Proportional Hazards Model**, which is developed and validated using a longitudinal cohort from **West China Hospital**.
+		- This tool estimates **1-7-year cumulative sarcopenia risk** using a **Fine-Gray model accounting for competing death**.
 		- This risk assessment tool uses **Asian Working Group for Sarcopenia (AWGS) 2025** as sarcopenia diagnostic criteria.
 		- This risk assessment tool is primarily for **community-dwelling older adults** and may not be applicable to acute care or hospitalized populations.
-		- No personal health information entered into this tool is stored or transmitted to external servers. **All calculations are performed locally within the session**.
+		- Five baseline measurements are required: **age, sex, mid-upper arm circumference, hip circumference and calf circumference**. Percentages and progress bars show absolute risk; no risk categories or treatment recommendations are assigned.
+		- Inputs are processed in the application session to generate predictions and a downloadable report. The application does not write individual inputs to a database or local data file.
 		- This tool is intended strictly for **clinical decision support** and does not constitute a formal medical diagnosis or a professional medical opinion.
 		- All predictive results should be interpreted within the context of a comprehensive clinical evaluation. **Final clinical judgment and diagnostic responsibility remain exclusively with the presiding physician**.
 		""")
 
 
-def show_responsive_warning(
-		breakpoint_px: int = 768
-) -> None:
+def show_responsive_warning(breakpoint_px: int = 768) -> None:
 	"""Renders a conditional warning message tailored for mobile/narrow screens.
 
 	This function utilizes CSS Media Queries to inject a custom HTML alert box
